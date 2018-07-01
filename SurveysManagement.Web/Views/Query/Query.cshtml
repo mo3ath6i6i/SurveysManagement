@@ -1,0 +1,201 @@
+﻿@model SurveysManagement.Web.Models.QueryViewModel
+@{
+    ViewBag.Title = "Query";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Query</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <div class="card-body p-6">
+            <div class="form-group">
+                <input type="hidden" name="hdnUserSurveys" id="hdnUserSurveys" value="" />
+                <label class="form-label">Select Surveys</label>
+                <table id="UsersTable" class="display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Agent</th>
+                            <th>CreationDate</th>
+                            <th>StartDate</th>
+                            <th>EndDate</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="button" onclick="ExportToExcel('full')" value="Export" class="btn btn-default" />
+                    <input type="button" onclick="ExportToExcel('raw')" value="ExportRaw" class="btn btn-default" />
+                    <label id="ErrorFlat" class="hidden">Flat query accepts one survey</label>
+                    <label id="ErrorEmpty" class="hidden">No surveys selected</label>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<link href="~/assets/css/DataTables.css" rel="stylesheet" />
+<link href="~/assets/css/select.dataTable.min.css" rel="stylesheet" />
+
+<script src="~/assets/js/DataTables.js"></script>
+<script src="~/assets/js/datatables.select.min.js"></script>
+<script src="~/assets/js/dataTables.buttons.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        //////////////////////////
+        $('#UsersTable').DataTable(
+        {
+            "initComplete": function () {
+                this.api().on('draw', function () {
+                    retainSelection();
+                });
+            },
+            "columnDefs": [
+                { "width": "5%", "targets": [0] },
+                { "className": "text-center custom-middle-align", "targets": [0, 1, 2, 3, 4, 5, 6, 7] },
+            ],
+            "language":
+                {
+                    "processing": "<div class='overlay custom-loader-background'><i class='fa fa-cog fa-spin custom-loader-color'></i></div>"
+                },
+            "processing": true,
+            "serverSide": true,
+            "ajax":
+                {
+                    "url": "@Url.Action("getsurveys", "Surveys")",
+                    "type": "POST",
+                    "dataType": "JSON"
+                },
+            "columns": [
+                        {
+                            "data": "", // can be null or undefined
+                            "defaultContent": ""
+                        },
+                        { "data": "Id" },
+                { "data": "Name" },
+                { "data": "Category" },
+                { "data": "Agent" },
+                {
+                    "data": "CreationDate",
+                    "type": "date ",
+                    "render": function (value) {
+                        if (value === null) return "";
+
+                        var pattern = /Date\(([^)]+)\)/;
+                        var results = pattern.exec(value);
+                        var dt = new Date(parseFloat(results[1]));
+
+                        return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+                    }
+                },
+                {
+                    "data": "StartDate",
+                    "type": "date ",
+                    "render": function (value) {
+                        if (value === null) return "";
+
+                        var pattern = /Date\(([^)]+)\)/;
+                        var results = pattern.exec(value);
+                        var dt = new Date(parseFloat(results[1]));
+
+                        return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+                    }
+                },
+                {
+                    "data": "EndDate",
+                    "type": "date ",
+                    "render": function (value) {
+                        if (value === null) return "";
+
+                        var pattern = /Date\(([^)]+)\)/;
+                        var results = pattern.exec(value);
+                        var dt = new Date(parseFloat(results[1]));
+
+                        return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+                    }
+                }
+            ],
+            "rowId": 'Id',
+            "columnDefs": [{
+                "orderable": false,
+                "className": 'select-checkbox',
+                "targets": 0
+            }],
+            "select": {
+                "style": "multi",
+                "selector": 'td:first-child'
+            }
+        });
+
+        //var selectedUsersArray = [];
+        $('#UsersTable tbody').on('click', 'td:first-child', function () {
+            var id = this.parentElement.id;
+            var index = $('#hdnUserSurveys').val().indexOf(',' + id + ',');
+
+            if (index === -1) {
+                $('#hdnUserSurveys').val($('#hdnUserSurveys').val() + ',' + id + ',');
+            } else {
+                $('#hdnUserSurveys').val($('#hdnUserSurveys').val().replace(',' + id + ',', ''));
+            }
+
+            //$(this).parentElement.toggleClass('selected');
+        });
+
+        setTimeout(function () { retainSelection(); }, 1000);
+
+    });
+
+    function retainSelection() {
+        $('#UsersTable tbody tr').each(function (i, row) {
+            var itemId = this.id;
+            if ($('#hdnUserSurveys').val().indexOf(',' + itemId + ',') > -1) {
+                $(this).addClass('selected');
+            }
+            else {
+                $(this).removeClass('selected');
+            }
+
+        });
+    }
+
+    function ExportToExcel(t) {
+        debugger;
+        if ($('#hdnUserSurveys').val().trim() == '') {
+            $('#ErrorEmpty').removeAttr('class');
+            return false;
+        }
+        else {
+            $('#ErrorEmpty').attr('class', 'hidden');
+        }
+        if ($('#hdnUserSurveys').val().split(',,').length > 1){
+            $('#ErrorFlat').removeAttr('class');
+            return false;
+        }
+        else{
+            $('#ErrorFlat').attr('class', 'hidden');
+        }
+        var surveysSelected = $('#hdnUserSurveys').val();
+        $.ajax({
+            cache: false,
+            type: 'POST',
+            url: '@Url.Action("DownloadExcel", "Query")',
+            data: { data: surveysSelected, typ : t },
+            async: true,
+            success: function (data) {
+                debugger;
+                var response = data;
+                window.location = '/Query/Download?fileGuid=' + response.FileGuid
+                                  + '&filename=' + response.FileName;
+            }
+        });
+    }
+</script>

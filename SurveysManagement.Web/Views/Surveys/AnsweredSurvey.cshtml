@@ -1,0 +1,42 @@
+﻿@model List<SurveysManagement.Web.Commons.Questions.BaseQuestion>
+@{
+    ViewBag.Title = "AnsweredSurvey";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="form-horizontal">
+    <h4>Survey Answers</h4>
+    <hr />
+
+
+    @foreach (var question in Model)
+    {
+        if (question != null)
+        {
+            //question.RenderQuestion();
+            @Html.Raw(question.Html)
+        }
+    }
+
+    <div class="container">
+
+        <div class="form-group pull-right">
+            @if(@ViewBag.NextId != null)
+            {@Html.ActionLink("<", "AnsweredSurvey", "Surveys", new { id = @ViewBag.NextId }, new {@class = "btn btn-primary" });}
+            @if(@ViewBag.PrevId != null)
+            {@Html.ActionLink(">", "AnsweredSurvey", "Surveys", new { id = @ViewBag.PrevId }, new {@class = "btn btn-primary" });}           
+        </div>
+
+    </div>
+
+
+
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('input, select, option, checkbox, radio').prop('disabled', true);
+    });
+</script>
+
+

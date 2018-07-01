@@ -1,0 +1,169 @@
+﻿@model SurveysManagement.Web.Models.EditUserViewModel
+@{
+    ViewBag.Title = "EditUser";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+                        <form class="card" action="EditUser" method="post">
+                            @Html.AntiForgeryToken()
+                            <div class="card-body p-6">
+                                <div class="card-title">Create new account</div>
+                                <input type="hidden" name="Id" value="@Model.Id"/>
+                                <div class="form-group">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" value="@Model.Name" name="Name" class="form-control" placeholder="Enter name">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Birth Date</label>
+                                    <div class='input-group date' id='datetimepickerBirthDate'>
+                                        <input type="text" value="@Model.BirthDate" name="BirthDate" class="form-control" placeholder="Enter expiry date">
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                    
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Expiry Date</label>
+                                    <div class='input-group date' id='datetimepickerExpiryDate'>
+                                        <input type="text" value="@Model.ExpiryDate" name="ExpiryDate" class="form-control" placeholder="Enter expiry date">
+                                        <span class="input-group-addon">
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </span>
+                                    </div>
+                                    
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Phone</label>
+                                    <input type="tel" value="@Model.Phone" name="Phone" class="form-control" placeholder="Enter phone">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">City</label>
+                                    <input type="text" value="@Model.City" name="City" class="form-control" placeholder="Enter city">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Area</label>
+                                    <input type="text" value="@Model.Area" name="Area" class="form-control" placeholder="Enter area">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Street</label>
+                                    <input type="text" value="@Model.Street" name="Street" class="form-control" placeholder="Enter street">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Education</label>
+                                    <input type="text" value="@Model.Education" name="Education" class="form-control" placeholder="Enter education">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Major</label>
+                                    <input type="text" value="@Model.Major" name="Major" class="form-control" placeholder="Enter major">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Shift Start</label>
+                                    <input type="time" value="@Model.ShiftStart" name="ShiftStart" class="form-control" placeholder="Enter shift end">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Shift End</label>
+                                    <input type="time" value="@Model.ShiftEnd" name="ShiftEnd" class="form-control" placeholder="Enter shift start">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Shift Description</label>
+                                    <input type="text" value="@Model.ShiftDescription" name="ShiftDescription" class="form-control" placeholder="Enter shift description">
+                                </div>
+                                @{
+                                    string Male = "checked='checked'";
+                                    string Female = "";
+
+                                    if (Model.Gender == "M")
+                                    {
+                                        Male = "checked='checked'";
+                                        Female = "";
+                                    }
+                                    else if (Model.Gender == "F")
+                                    {
+                                        Male = "";
+                                        Female = "checked='checked'";
+                                    }
+
+                                    string UserRole = "checked";
+                                    string AdminRole = "";
+                                    string ClientRole = "";
+
+                                    if (Model.RoleId == "1")
+                                    {
+                                        UserRole = "checked='checked'";
+                                        AdminRole = "";
+                                        ClientRole = "";
+                                    }
+                                    else if (Model.RoleId == "2")
+                                    {
+                                        UserRole = "";
+                                        AdminRole = "checked='checked'";
+                                        ClientRole = "";
+                                    }
+                                    else if (Model.RoleId == "3")
+                                    {
+                                        UserRole = "";
+                                        AdminRole = "";
+                                        ClientRole = "checked='checked'";
+                                    }
+                                }
+                                <div class="form-group">
+                                    <label class="form-label">Gender</label>
+                                    <div class="custom-controls-stacked">
+                                        <label class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" class="custom-control-input" name="Gender" value="M" @Male>
+                                            <span class="custom-control-label">Male</span>
+                                        </label>
+                                        <label class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" class="custom-control-input" name="Gender" value="F" @Female>
+                                            <span class="custom-control-label">Female</span>
+                                        </label>
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">User type</label>
+                                    <div class="custom-controls-stacked">
+                                       
+                                        <label class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" class="custom-control-input" name="RoleId" value="1" @UserRole>
+                                            <span class="custom-control-label">User</span>
+                                        </label>
+                                        <label class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" class="custom-control-input" name="RoleId" value="2" @AdminRole>
+                                            <span class="custom-control-label">Admin</span>
+                                        </label>
+                                        <label class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" class="custom-control-input" name="RoleId" value="3" @ClientRole>
+                                            <span class="custom-control-label">Client</span>
+                                        </label>
+                                        
+                                    </div>
+                                </div>  
+                                <div class="form-footer">
+                                    <button type="submit" class="btn btn-primary btn-block">Save</button>
+                                </div>                              
+                            </div>
+                        </form>
+<script src="~/Scripts/bootstrap-datetimepicker.min.js"></script>
+
+<script>
+    /////datepicke/////
+    $(document).ready(function () {
+        $(function () {
+            $('#datetimepickerBirthDate').datetimepicker();
+            $('#datetimepickerExpiryDate').datetimepicker({
+                useCurrent: false //Important! See issue #1075
+            });
+            $("#datetimepickerExpiryDate").on("dp.change", function (e) {
+                $('#datetimepickerBirthDate').data("DateTimePicker").minDate(e.date);
+            });
+            $("#datetimepickerBirthDate").on("dp.change", function (e) {
+                $('#datetimepickerExpiryDate').data("DateTimePicker").maxDate(e.date);
+            });
+        });
+    });
+    /////datepicke/////
+</script>
+
+

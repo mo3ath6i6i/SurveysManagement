@@ -1,0 +1,78 @@
+﻿@model IEnumerable<SurveysManagement.Web.Models.RegisterViewModel>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link href="~/assets/css/DataTables.css" rel="stylesheet" />
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Register")
+</p>
+<table id="UsersTable" class="display" style="width:100%">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>BirthDate</th>
+        </tr>
+    </thead>
+    <tfoot>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>BirthDate</th>
+        </tr>
+    </tfoot>
+</table>
+<script src="~/assets/js/DataTables.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#UsersTable').DataTable(
+        {
+            "columnDefs": [
+                { "width": "5%", "targets": [0] },
+                { "className": "text-center custom-middle-align", "targets": [0, 1, 2, 3, 4] },
+            ],
+            "language":
+                {
+                    "processing": "<div class='overlay custom-loader-background'><i class='fa fa-cog fa-spin custom-loader-color'></i></div>"
+                },
+            "processing": true,
+            "serverSide": true,
+            "ajax":
+                {
+                    "url": "getUsers",
+                    "type": "POST",
+                    "dataType": "JSON"
+                },
+            "columns": [
+                        { "data": "Id" },
+                        { "data": "Name" },
+                        { "data": "Email" },
+                        { "data": "Phone" },
+                        {
+                            "data": "BirthDate",
+                            "type": "date ",
+                            "render": function (value) {
+                                if (value === null) return "";
+
+                                var pattern = /Date\(([^)]+)\)/;
+                                var results = pattern.exec(value);
+                                var dt = new Date(parseFloat(results[1]));
+
+                                return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+                            }
+                        }
+            ]
+        });
+    });
+
+</script>

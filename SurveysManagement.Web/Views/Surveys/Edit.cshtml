@@ -1,0 +1,382 @@
+﻿@model SurveysManagement.Web.Models.SurveyViewModel
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Edit</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4>Survey</h4>
+        <hr />
+            <div class="card-body p-6">
+                <div class="card-title">Create new Survey</div>
+                <input type="hidden" name="Id" value="@Model.Id" />
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" value="@Model.Name" name="Name" class="form-control" placeholder="Enter Name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">From</label>
+                    <div class='input-group date' id='datetimepickerStartDate'>
+                        <input type="text" value="@Model.StartDate" name="StartDate" data-provide="datepicker" class="form-control date-picker" placeholder="Enter From">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">To</label>
+                    <div class='input-group date' id='datetimepickerEndDate'>
+                        <input type="text" value="@Model.EndDate" name="EndDate" data-provide="datepicker" class="form-control date-picker" placeholder="Enter To">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>                    
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Client</label>
+                    <select value="@Model.AgentId" name="AgentId" class="form-control custom-select">
+                        @{
+                            string chk = "";
+                            foreach (var typ in Model.Agents)
+                            {
+                                chk = "";
+                                if (Model.AgentId != null && typ.Id == Model.AgentId)
+                                {
+                                    chk = "selected";
+                                }
+                            <option title="@typ.Text" value="@typ.Id" @chk>@typ.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Type</label>
+                    <select value="@Model.CategoryId" name="CategoryId" class="form-control custom-select">
+                        @{
+                            foreach (var typ in Model.Categories)
+                            {
+                                chk = "";
+                                if (Model.CategoryId != null && typ.Id == Model.CategoryId)
+                                {
+                                    chk = "selected";
+                                }
+                            <option title="@typ.Text" value="@typ.Id" @chk>@typ.Text</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    @{
+                        string hdnSurveyQuestionsValue = "";
+                        if (string.IsNullOrEmpty(Model.hdnSurveyQuestions))
+                        {
+                            if (Model.SurveyQuestions != null)
+                            {
+                                foreach (var item in Model.SurveyQuestions)
+                                {
+                                    hdnSurveyQuestionsValue += "," + item.Id.ToString() + ",";
+                                }
+                            }
+                        }
+                        else
+                        {
+                            hdnSurveyQuestionsValue = Model.hdnSurveyQuestions;
+                        }
+                    }
+                    <input type="hidden" name="hdnSurveyQuestions" id="hdnSurveyQuestions" value="@hdnSurveyQuestionsValue" />
+                    <label class="form-label">Survey Questions</label>
+                    <table id="QuestionsTable" class="display" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Id</th>
+                                <th>Question</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+
+                <div class="form-group">
+                    @{
+                        string hdnUserSurveysValue = "";
+                        if (string.IsNullOrEmpty(Model.hdnUserSurveys))
+                        {
+                            if (Model.UserSurveys != null)
+                            {
+                                foreach (var item in Model.UserSurveys)
+                                {
+                                    hdnUserSurveysValue += "," + item.Id.ToString() + ",";
+                                }
+                            }
+                        }
+                        else
+                        {
+                            hdnUserSurveysValue = Model.hdnUserSurveys;
+                        }
+                    }
+                    <input type="hidden" name="hdnUserSurveys" id="hdnUserSurveys" value="@hdnUserSurveysValue" />
+                    <label class="form-label">Survey Users</label>
+                    <table id="UsersTable" class="display" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Id</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>BirthDate</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" onclick="fillIsPreview('false');" class="btn btn-default" />
+                <input type="submit" value="Preview" onclick="fillIsPreview('true');" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+    <input id="hfIsPreview" type="hidden" name="hfIsPreview" value='@Model.hfIsPreview' />
+    <input id="hfPreviewId" type="hidden" name="hfPreviewId" value='@Model.hfPreviewId' />
+
+                        }
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+<link href="~/assets/css/DataTables.css" rel="stylesheet" />
+<link href="~/assets/css/select.dataTable.min.css" rel="stylesheet" />
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Edit")
+</p>
+
+<script src="~/assets/js/DataTables.js"></script>
+<script src="~/assets/js/datatables.select.min.js"></script>
+<script src="~/assets/js/dataTables.buttons.min.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script src="~/Scripts/bootstrap-datetimepicker.min.js"></script>
+<script>
+    /////datepicke/////
+    $(document).ready(function () {
+        $(function () {
+            $('#datetimepickerEndDate').datetimepicker();
+            $('#datetimepickerStartDate').datetimepicker({
+                useCurrent: false //Important! See issue #1075
+            });
+            //$("#datetimepickerStartDate").on("dp.change", function (e) {
+            //    $('#datetimepickerEndDate').data("DateTimePicker").minDate(e.date);
+            //});
+            //$("#datetimepickerEndDate").on("dp.change", function (e) {
+            //    $('#datetimepickerStartDate').data("DateTimePicker").maxDate(e.date);
+            //});
+        });
+        debugger;
+        if ($('#hfIsPreview').val() == 'true')
+        {
+            var tempId = parseInt($('#hfPreviewId').val());
+            openInNewTab('@Url.Action("viewtempsurvey", "Surveys")' + '/' + tempId);
+        }
+        else if ($('#hfIsPreview').val() == 'false')
+        {
+        //show success message
+        }
+    });
+
+    function openInNewTab(url) {
+        var win = window.open(url, '_blank');
+        win.focus();
+    }
+
+    /////datepicke/////
+    function fillIsPreview(value) {
+        $('#hfIsPreview').val(value);
+    }
+
+    function getListsInfo() {
+        var selectedQuestions = $('#QuestionsTable tr').next('.selected').each(function () { this.id });
+        var selectedUsers = $('#UsersTable tr').next('.selected').each(function () { this.id });
+    }
+
+    function retainSelection() {
+        debugger;
+        $('#QuestionsTable tbody tr').each(function (i, row) {
+            var itemId = this.id;
+            if ($('#hdnSurveyQuestions').val().indexOf(',' + itemId + ',') > -1) {
+                $(this).addClass('selected');
+            }
+            else {
+                $(this).removeClass('selected');
+            }
+
+        });
+
+        $('#UsersTable tbody tr').each(function (i, row) {
+            var itemId = this.id;
+            if ($('#hdnUserSurveys').val().indexOf(',' + itemId + ',') > -1) {
+                $(this).addClass('selected');
+            }
+            else {
+                $(this).removeClass('selected');
+            }
+
+        });
+    }
+
+    $(document).ready(function () {
+        
+        $('#QuestionsTable').DataTable(
+        {
+            "initComplete": function () {
+                this.api().on( 'draw', function () {
+                    retainSelection();
+                } );
+            },
+            "columnDefs": [
+                { "width": "5%", "targets": [0] },
+                { "className": "text-center custom-middle-align", "targets": [0, 1, 2, 3] },
+            ],
+            "language":
+                {
+                    "processing": "<div class='overlay custom-loader-background'><i class='fa fa-cog fa-spin custom-loader-color'></i></div>"
+                },
+            "processing": true,
+            "serverSide": true,
+            "ajax":
+                {
+                    "url": "@Url.Action("getquestions", "Question")",
+                    "type": "POST",
+                    "dataType": "JSON"
+                },
+            "columns": [
+                        {"data": "", // can be null or undefined
+                         "defaultContent": ""
+                        },
+                        {
+                            "data": "Id"
+                        },
+                        {
+                            "data": "Question", // can be null or undefined
+                            "defaultContent": ""
+                        },
+                        {
+                            "data": "Type", // can be null or undefined
+                            "defaultContent": ""
+                        }
+            ],
+            "rowId": 'Id',
+            "columnDefs": [{
+                "orderable": false,
+                "className": 'select-checkbox',
+                "targets": 0
+            }],
+            "select": {
+                "style" : "multi",
+                "selector": 'td:first-child'
+            }
+        });
+
+        //var selectedQuestionsArray = [];
+        $('#QuestionsTable tbody').on('click', 'td:first-child', function () {
+            var id = this.parentElement.id;
+            var index = $('#hdnSurveyQuestions').val().indexOf(',' + id + ',');
+
+            if (index === -1) {
+                $('#hdnSurveyQuestions').val($('#hdnSurveyQuestions').val() + ',' + id + ',');
+            } else {
+                $('#hdnSurveyQuestions').val($('#hdnSurveyQuestions').val().replace(',' + id + ',', ''));
+            }
+
+            //$(this).parentElement.toggleClass('selected');
+        });
+        //////////////////////////
+        $('#UsersTable').DataTable(
+        {
+            "initComplete": function () {
+                this.api().on('draw', function () {
+                    retainSelection();
+                });
+            },
+            "columnDefs": [
+                { "width": "5%", "targets": [0] },
+                { "className": "text-center custom-middle-align", "targets": [0, 1, 2, 3, 4, 5] },
+            ],
+            "language":
+                {
+                    "processing": "<div class='overlay custom-loader-background'><i class='fa fa-cog fa-spin custom-loader-color'></i></div>"
+                },
+            "processing": true,
+            "serverSide": true,
+            "ajax":
+                {
+                    "url": "@Url.Action("getUsersOnly", "Account")",
+                    "type": "POST",
+                    "dataType": "JSON"
+                },
+            "columns": [
+                        {
+                            "data": "", // can be null or undefined
+                            "defaultContent": ""
+                        },
+                        {"data": "Id"},
+                        { "data": "Name" },
+                        { "data": "Email" },
+                        { "data": "Phone" },
+                        {
+                            "data": "BirthDate",
+                            "type": "date ",
+                            "render": function (value) {
+                                if (value === null) return "";
+
+                                var pattern = /Date\(([^)]+)\)/;
+                                var results = pattern.exec(value);
+                                var dt = new Date(parseFloat(results[1]));
+
+                                return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+                            }
+                        }
+            ],
+            "rowId": 'Id',
+            "columnDefs": [{
+                "orderable": false,
+                "className": 'select-checkbox',
+                "targets": 0
+            }],
+            "select": {
+                "style": "multi",
+                "selector": 'td:first-child'
+            }
+        });
+
+        //var selectedUsersArray = [];
+        $('#UsersTable tbody').on('click', 'td:first-child', function () {
+            var id = this.parentElement.id;
+            var index = $('#hdnUserSurveys').val().indexOf(',' + id + ',');
+
+            if (index === -1) {
+                $('#hdnUserSurveys').val($('#hdnUserSurveys').val() + ',' + id + ',');
+            } else {
+                $('#hdnUserSurveys').val($('#hdnUserSurveys').val().replace(',' + id + ',', ''));
+            }
+
+            //$(this).parentElement.toggleClass('selected');
+        });
+        
+        setTimeout(function () { retainSelection(); }, 1000);
+        
+    });
+
+
+
+</script>

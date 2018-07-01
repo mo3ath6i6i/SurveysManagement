@@ -1,0 +1,200 @@
+﻿@model SurveysManagement.Web.Models.QuestionViewModel
+@using SurveysManagement.Web.Enums
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit</h2>
+
+@using (Html.BeginForm("Edit", "Question", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <div class="form-horizontal">
+        <h4>Question</h4>
+        <hr />
+        <div class="card-body p-6">
+            <div class="card-title">Create new Question</div>
+            <input type="hidden" name="Id" value="@Model.Id" />
+            <div class="form-group">
+                <label class="form-label">Question</label>
+                <input type="text" value="@Model.Question" name="Question" class="form-control" placeholder="Enter Question">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Type</label>
+                <select value="@Model.Type" name="Type" id="Type" class="form-control" onchange="renderQuestionOptions()">
+                    @{
+                        string chk = "";
+                        foreach (var typ in Model.QuestionTypes)
+                        {
+                            chk = "";
+                            if (typ.Id.ToString() == Model.Type)
+                            {
+                                chk = "selected";
+                            }
+                            <option title="@typ.Text" value="@typ.Id" @chk>@typ.Text</option>
+                        }
+                    }
+                </select>
+                <div class="checkbox">
+                    <label>
+                        @{ 
+                            string chkOther = "";
+                            if(Model.hasOtherOption != null && Model.hasOtherOption == true)
+                            {
+                                chkOther = "checked='checked'";
+                            }
+                        }
+                    </label>
+                </div>
+                <div id="hasOtherOption">
+                    <input type="checkbox" value="true" name="hasOtherOptionval" @chkOther> Other
+                </div>
+            </div>
+            <div class="form-group" id="divText">
+                <label class="form-label">Answers</label>
+                @{ 
+                    string strAllAnswers = "";
+                    if (Model.Answers != null && Model.Answers.Count() > 0)
+                    {
+                        strAllAnswers = Model.Answers[0].Text;
+                        for (int i = 1; i < Model.Answers.Count(); i++)
+                        {
+                            strAllAnswers = strAllAnswers + "#^#" + Model.Answers[i].Text;
+                        }
+                    }
+                }
+                <input type="text" value="@strAllAnswers" id="textAnswer" name="Text" class="form-control" placeholder="Enter Text"><input type="button" value="+" onclick="addNewText()"/>
+                <div id="divNewTexts">
+
+                </div>
+            </div>
+            <div class="form-group" id="divFrom">
+                <label class="form-label">From</label>
+                <input type="number" value="@Model.From" name="From" class="form-control" placeholder="Enter From">
+            </div>
+            <div class="form-group" id="divTo">
+                <label class="form-label">To</label>
+                <input type="number" value="@Model.To" name="To" class="form-control" placeholder="Enter To">
+            </div>     
+            <div class="form-group" id="divStep">
+                <label class="form-label">Step</label>
+                <input type="number" value="@Model.Step" name="Step" class="form-control" placeholder="Enter Step">
+            </div>           
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" onclick="getAnswers()" />
+            </div>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        renderQuestionOptions();
+        renderAnswers();
+    });
+
+    function renderAnswers() {
+        debugger;
+        var answers = '@Model.Text';
+        var arrAnswers = answers.split('#^#', 100);
+        if (arrAnswers.length > 0) {
+            $('#textAnswer').val(arrAnswers[0]);
+            for (var i = 1 ; i < arrAnswers.length ; i++) {
+                $('#divNewTexts').append('<div><input type="text" value="' + arrAnswers[i] + '" class="form-control" placeholder="Enter Text"><input type="button" value="+" onclick="addNewText()"/><input type="button" value="-" onclick="deleteNewText($(this))"/></div>');
+            }
+        }
+    }
+
+    function getAnswers() {
+        debugger;
+        $('#divNewTexts input[type="text"]').each(function () {
+            debugger;
+            $('#textAnswer').val($('#textAnswer').val() + "#^#" + $(this).val());
+        });
+        return true;
+    }
+
+    function addNewText() {
+        $('#divNewTexts').append('<div><input type="text" name="Text" class="form-control" placeholder="Enter Text"><input type="button" value="+" onclick="addNewText()"/><input type="button" value="-" onclick="deleteNewText($(this))"/></div>');
+    }
+
+    function deleteNewText(ctrl) {
+        ctrl.closest("div").remove();
+    }
+
+    function renderQuestionOptions() {
+        if ($('#Type').val() == '@Html.Raw((int)Enums.QuestionTypes.Checkbox)') {
+            $('#divFrom').hide();
+            $('#divTo').hide();
+            $('#divStep').hide();
+            $('#hasOtherOption').show();
+            $('#divText').show();
+        }
+        else if ($('#Type').val() == '@Html.Raw((int)Enums.QuestionTypes.Multiplechoice)') {
+            $('#divFrom').hide();
+            $('#divTo').hide();
+            $('#divStep').hide();
+            $('#hasOtherOption').show();
+            $('#divText').show();
+        }
+        else if ($('#Type').val() == '@Html.Raw((int)Enums.QuestionTypes.Text)') {
+            $('#divFrom').hide();
+            $('#divTo').hide();
+            $('#divStep').hide();
+            $('#hasOtherOption').hide();
+            $('#divText').hide();
+        }
+        else if ($('#Type').val() == '@Html.Raw((int)Enums.QuestionTypes.Percentage)') {
+            $('#divFrom').hide();
+            $('#divTo').hide();
+            $('#divStep').hide();
+            $('#hasOtherOption').hide();
+            $('#divText').hide();
+        }
+        else if ($('#Type').val() == '@Html.Raw((int)Enums.QuestionTypes.Range)') {
+            $('#divFrom').show();
+            $('#divTo').show();
+            $('#divStep').show();
+            $('#hasOtherOption').hide();
+            $('#divText').hide();
+        }
+        else if ($('#Type').val() == '@Html.Raw((int)Enums.QuestionTypes.Number)') {
+            $('#divFrom').hide();
+            $('#divTo').hide();
+            $('#divStep').hide();
+            $('#hasOtherOption').hide();
+            $('#divText').hide();
+        }
+        else if ($('#Type').val() == '@Html.Raw((int)Enums.QuestionTypes.Dropdown)') {
+            $('#divFrom').hide();
+            $('#divTo').hide();
+            $('#divStep').hide();
+            $('#hasOtherOption').hide();
+            $('#divText').show();
+        }
+        else if ($('#Type').val() == '@Html.Raw((int)Enums.QuestionTypes.Slider)') {
+            $('#divFrom').show();
+            $('#divTo').show();
+            $('#divStep').show();
+            $('#hasOtherOption').hide();
+            $('#divText').hide();
+        }
+        else if ($('#Type').val() == '@Html.Raw((int)Enums.QuestionTypes.Date)') {
+            $('#divFrom').hide();
+            $('#divTo').hide();
+            $('#divStep').hide();
+            $('#hasOtherOption').hide();
+            $('#divText').hide();
+        }
+        else if ($('#Type').val() == '@Html.Raw((int)Enums.QuestionTypes.Rate)') {
+            $('#divFrom').hide();
+            $('#divTo').hide();
+            $('#divStep').hide();
+            $('#hasOtherOption').hide();
+            $('#divText').hide();
+        }
+    }
+</script>

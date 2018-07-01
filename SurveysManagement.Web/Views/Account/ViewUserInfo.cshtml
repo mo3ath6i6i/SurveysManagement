@@ -1,0 +1,116 @@
+﻿@model SurveysManagement.Web.Models.ViewUserInfoViewModel
+@{
+    ViewBag.Title = "View User Information";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+                        <form class="card" action="EditUser" method="post">
+                            @Html.AntiForgeryToken()
+                            <div class="card-body p-6">
+                                <div class="card-title">Create new account</div>
+                                <input type="hidden" name="Id" value="@Model.Id"/>
+                                <div class="form-group">
+                                    <label class="form-label">Name</label>
+                                    <input type="text" value="@Model.Name" name="Name" disabled="disabled" class="form-control" placeholder="Enter name">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Birth Date</label>
+                                    <input type="text" value="@Model.BirthDate" name="BirthDate" disabled="disabled" class="form-control" placeholder="Enter expiry date">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Expiry Date</label>
+                                    <input type="text" value="@Model.ExpiryDate" name="ExpiryDate" disabled="disabled" class="form-control" placeholder="Enter expiry date">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Phone</label>
+                                    <input type="tel" value="@Model.Phone" name="Phone" disabled="disabled" class="form-control" placeholder="Enter phone">
+                                </div>                                
+                                <div class="form-group">
+                                    <label class="form-label">Shift Start</label>
+                                    <input type="time" value="@Model.ShiftStart" name="ShiftStart" class="form-control" placeholder="Enter shift end">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Shift End</label>
+                                    <input type="time" value="@Model.ShiftEnd" name="ShiftEnd" class="form-control" placeholder="Enter shift start">
+                                </div>
+                                
+                                @{
+                                    string Male = "checked='checked'";
+                                    string Female = "";
+
+                                    if (Model.Gender == "M")
+                                    {
+                                        Male = "checked='checked'";
+                                        Female = "";
+                                    }
+                                    else if (Model.Gender == "F")
+                                    {
+                                        Male = "";
+                                        Female = "checked='checked'";
+                                    }
+
+                                    string UserRole = "checked";
+                                    string AdminRole = "";
+                                    string ClientRole = "";
+
+                                    if (Model.RoleId == "1")
+                                    {
+                                        UserRole = "checked='checked'";
+                                        AdminRole = "";
+                                        ClientRole = "";
+                                    }
+                                    else if (Model.RoleId == "2")
+                                    {
+                                        UserRole = "";
+                                        AdminRole = "checked='checked'";
+                                        ClientRole = "";
+                                    }
+                                    else if (Model.RoleId == "3")
+                                    {
+                                        UserRole = "";
+                                        AdminRole = "";
+                                        ClientRole = "checked='checked'";
+                                    }
+                                }
+                                <div class="form-group">
+                                    <label class="form-label">Gender</label>
+                                    <div class="custom-controls-stacked">
+                                        <label class="custom-control custom-radio custom-control-inline">
+                                            <input  disabled="disabled" type="radio" class="custom-control-input" name="Gender" value="M" @Male>
+                                            <span class="custom-control-label">Male</span>
+                                        </label>
+                                        <label class="custom-control custom-radio custom-control-inline">
+                                            <input disabled="disabled" type="radio" class="custom-control-input" name="Gender" value="F" @Female>
+                                            <span class="custom-control-label">Female</span>
+                                        </label>
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">User type</label>
+                                    <div class="custom-controls-stacked">
+                                       
+                                        <label class="custom-control custom-radio custom-control-inline">
+                                            <input disabled="disabled" type="radio" class="custom-control-input" name="RoleId" value="1" @UserRole>
+                                            <span class="custom-control-label">User</span>
+                                        </label>
+                                        <label class="custom-control custom-radio custom-control-inline">
+                                            <input disabled="disabled" type="radio" class="custom-control-input" name="RoleId" value="2" @AdminRole>
+                                            <span class="custom-control-label">Admin</span>
+                                        </label>
+                                        <label class="custom-control custom-radio custom-control-inline">
+                                            <input disabled="disabled" type="radio" class="custom-control-input" name="RoleId" value="3" @ClientRole>
+                                            <span class="custom-control-label">Client</span>
+                                        </label>
+                                        
+                                    </div>
+                                </div>  
+                                <div class="form-footer">
+                                    <a href="@Url.Action("UsersList", "Account")" class="btn btn-primary btn-block">Back</a>
+                                    @*<button type="submit" class="btn btn-primary btn-block">Save</button>*@
+                                </div>                              
+                            </div>
+                        </form>
+                      
+
+

@@ -1,0 +1,74 @@
+﻿@model IEnumerable<SurveysManagement.DataAccess.Entities.User>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/assets/css/datatables.min.css" rel="stylesheet" />
+<script src="~/Scripts/datatables.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+
+        if ($.fn.DataTable.isDataTable('#tblOrder')) {
+            $('#tblOrder').dataTable().fnDestroy();
+            $('#tblOrder').dataTable().empty();
+
+        }
+
+        var complete = $('#tblOrder').DataTable(
+                {
+                    "serverSide": true,
+                    "destroy": true,
+                    "processing": true,
+                    "ajax":
+                    {
+                        url: "@Url.Action("GetOrderFiltered", "UsersList")",
+                        method: "POST"
+                    },
+                    "columns": [
+                        {"data": "Name" },
+                        {"data": "Gender" },
+                        {"data": "Phone"   }
+
+                    ]
+                }
+
+            );
+
+        /// Following code is for filter input to apply filter only on Enter
+        var itm = $("#tblOrder_filter input")
+
+        itm.unbind();
+        itm.keyup(function (e) {
+            //enter or tab
+            if (e.keyCode == 13) {
+                complete.search(this.value).draw();
+            }
+        });
+
+
+    });
+</script>
+<h2>Users</h2>
+
+
+<table class="table" id="tblOrder">
+    <thead>
+        <tr>
+            <th>
+                Name
+
+            </th>
+            <th>
+                Gender
+
+            </th>
+            <th>
+                phone
+
+            </th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>  

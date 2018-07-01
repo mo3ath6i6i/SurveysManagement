@@ -1,0 +1,74 @@
+﻿
+@{
+    ViewBag.Title = "UsersList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>UsersList</h2>
+<link href="~/assets/css/DataTables.css" rel="stylesheet" />
+
+<p>
+    @Html.ActionLink("Create New", "Register")
+</p>
+<table id="UsersTable" class="display" style="width:100%">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Type</th>
+            <th></th>
+        </tr>
+    </thead>    
+</table>
+<script src="~/assets/js/DataTables.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#UsersTable').DataTable(
+        {
+            "columnDefs": [
+                { "width": "5%", "targets": [0] },
+                { "className": "text-center custom-middle-align", "targets": [0, 1, 2, 3, 4] },
+            ],
+            "language":
+                {
+                    "processing": "<div class='overlay custom-loader-background'><i class='fa fa-cog fa-spin custom-loader-color'></i></div>"
+                },
+            "processing": true,
+            "serverSide": true,
+            "ajax":
+                {
+                    "url": "getUsers",
+                    "type": "POST",
+                    "dataType": "JSON"
+                },
+            "columns": [
+                        { "data": "Id" },
+                        { "data": "Name" },
+                        { "data": "Email" },
+                        { "data": "Phone" },
+                        { "data": "Role"},
+                        {// this is Actions Column
+                            mRender: function (data, type, row) {
+                                var linkEdit = '@Html.ActionLink("Edit", "EditUser", new {id= -1 })';
+                                linkEdit = linkEdit.replace("-1", row.Id);
+
+                                var linkDetails = '@Html.ActionLink("Reset Password", "AdminResetPassword", new { id = -1 })';
+                                linkDetails = linkDetails.replace("-1", row.Id);
+
+                                var linkDelete = '@Html.ActionLink("Delete", "Delete", new {id= -1 }, new { onclick = "return confirm(' you want to delete?'); " })';
+                                linkDelete = linkDelete.replace("-1", row.Id);
+
+                                var linkView = '@Html.ActionLink("View", "ViewUserInfo", new {id= -1 }, new { id = -1 })';
+                                linkView = linkView.replace("-1", row.Id);
+
+                                //return linkDetails + " | " + linkEdit + " | " + linkDelete;
+                                return linkDetails + " | " + linkEdit + " | " + linkDelete + " | " + linkView;
+                            }
+                        }
+            ]
+        });
+    });
+
+</script>

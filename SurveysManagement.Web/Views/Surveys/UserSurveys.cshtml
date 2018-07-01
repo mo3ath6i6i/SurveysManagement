@@ -1,0 +1,103 @@
+﻿@model IEnumerable<SurveysManagement.Web.Models.SurveyViewModel>
+@using Microsoft.AspNet.Identity       
+@{
+    ViewBag.Title = "UserSurveys";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/assets/css/DataTables.css" rel="stylesheet" />
+<h2>My Surveys</h2>
+<input id="id" name="id" value="2" type="hidden" />
+<table id="SurveysTable" class="display" style="width:100%">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Agent</th>
+            <th>CreationDate</th>
+            <th>StartDate</th>
+            <th>EndDate</th>
+            <th></th>
+        </tr>
+    </thead>
+</table>
+<script src="~/assets/js/DataTables.js"></script>
+<script>
+$(document).ready(function () {
+$('#SurveysTable').DataTable(
+    {
+        "columnDefs": [
+            { "width": "5%", "targets": [0] },
+            { "className": "text-center custom-middle-align", "targets": [0, 1, 2, 3, 4, 5, 6] },
+        ],
+        "language":
+            {
+                "processing": "<div class='overlay custom-loader-background'><i class='fa fa-cog fa-spin custom-loader-color'></i></div>"
+            },
+        "processing": true,
+        "serverSide": true,
+        "ajax":
+            {
+                "url": "@Url.Action("getUserSurveys", "Surveys", new {username = User.Identity.GetUserName() })",
+                "type": "POST",
+                "dataType": "JSON"
+            },
+        "columns": [
+                    { "data": "Id" },
+                    { "data": "Name" },
+                    { "data": "Category" },
+                    { "data": "Agent" },
+                    {
+                        "data": "CreationDate",
+                        "type": "date ",
+                        "render": function (value) {
+                            if (value === null) return "";
+
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(value);
+                            var dt = new Date(parseFloat(results[1]));
+
+                            return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+                        }
+                    },
+                    {
+                        "data": "StartDate",
+                        "type": "date ",
+                        "render": function (value) {
+                            if (value === null) return "";
+
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(value);
+                            var dt = new Date(parseFloat(results[1]));
+
+                            return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+                        }
+                    },
+                    {
+                        "data": "EndDate",
+                        "type": "date ",
+                        "render": function (value) {
+                            if (value === null) return "";
+
+                            var pattern = /Date\(([^)]+)\)/;
+                            var results = pattern.exec(value);
+                            var dt = new Date(parseFloat(results[1]));
+
+                            return (dt.getMonth() + 1) + "/" + dt.getDate() + "/" + dt.getFullYear();
+                        }
+                    },
+                    {// this is Actions Column
+                        mRender: function (data, type, row) {
+                            console.log(row);
+                            var linkStart = '@Html.ActionLink("Start", "AnswerSurvey", "Surveys",  new {id= -1 }, new { })';
+                            linkStart = linkStart.replace("-1", row.Id);
+                                                        
+                            return linkStart;
+                            
+                        }
+                    }
+        ]
+    });
+});
+</script>
+

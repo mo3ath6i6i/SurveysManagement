@@ -1,0 +1,41 @@
+﻿@model List<SurveysManagement.Web.Commons.Questions.BaseQuestion>
+@{
+    ViewBag.Title = "AnswerSurvey";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+
+    var id = ViewContext.RouteData.Values["id"];
+}
+
+<div class="form-horizontal">
+    <h4>Survey</h4>
+    <hr />
+    @*<div class="card-body p-6">*@
+    <form id="surveyForm" action="AnswerSurvey" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="surveyid" value="@id" />
+        @if (Model != null)
+        {
+            foreach (var question in Model)
+            {
+                if (question != null)
+                {
+                    @Html.Raw(question.Html)
+                }
+            }
+        }
+
+        <div class="container">
+
+            <div class="form-group pull-right">
+                <button type="submit" id="submitSurvey" class="btn btn-primary">Submit Answer</button>
+            </div>
+
+        </div>
+    </form>
+    @*</div>*@
+
+</div>
+
