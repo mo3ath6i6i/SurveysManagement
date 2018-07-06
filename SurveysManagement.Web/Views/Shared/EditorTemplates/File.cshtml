@@ -1,0 +1,23 @@
+﻿@model String
+
+@using System.Collections
+@using System.Web.Mvc;
+
+<div class='form-group' style="position:relative">
+
+    <label class="hidden">accepted types</label>
+    <input type="button" class="btn btn-default btn-sm" onclick="uploadeFileInit(this, '.xls,.xlsx,.csv', '@Url.Action("Upload", "File")');" value="Pick a @Html.DisplayNameForModel()" />
+    @Html.TextBoxFor(Model => Model, new { @class = "invisible", style = "height:0" })
+    <div class="fileList listGroup">
+        @if (Model != null)
+        {
+            @*<div class='listItem' title="@Model">
+                    <a href='@Url.Action("Download", "File")?FileName=@Model.Replace(".", "*")'>
+                        <div class="listItem-text">@(Model.Substring(Model.IndexOf("_") + 1))</div>
+                    </a>
+                </div>*@
+        }
+    </div>
+    @Html.ValidationMessageFor(Model => Model, "", new { @class = "error help-block" })
+
+</div>

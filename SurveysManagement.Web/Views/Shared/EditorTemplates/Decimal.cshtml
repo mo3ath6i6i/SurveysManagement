@@ -1,0 +1,10 @@
+﻿@model Decimal?
+
+@using System.Collections
+@using System.Web.Mvc;
+
+<div class="form-group">
+    @Html.LabelForModel()
+    @Html.TextBoxFor(Model => Model, new { @class = "form-control form-control-sm", type = "number" })
+    @Html.ValidationMessageFor(Model => Model, "", new { @class = "error help-block" })
+</div>

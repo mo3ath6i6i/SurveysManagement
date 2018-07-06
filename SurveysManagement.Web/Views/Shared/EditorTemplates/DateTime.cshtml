@@ -1,0 +1,10 @@
+﻿@model DateTime?
+<div class='form-group'>
+
+    @Html.LabelForModel()
+    @Html.Raw(
+    Html.TextBoxFor(Model => Model, new { @class = "form-control form-control-sm datetimepicker no-client-validation", data_val_date = "" })
+    .ToHtmlString().Replace("data-val-date=\"\"", ""))
+    @*@Html.TextBoxFor(Model => Model, new { @type = "date", @class = "form-control form-control-sm" })*@
+</div>
+

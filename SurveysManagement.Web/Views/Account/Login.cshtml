@@ -5,9 +5,9 @@
     Layout = "";
 }
 
-
 <!doctype html>
 <html lang="en" dir="ltr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -38,23 +38,34 @@
     <link href="/assets/plugins/maps-google/plugin.css" rel="stylesheet" />
 
     <!-- Input Mask Plugin -->
+    <style>
+        .circleBase {
+            border-radius: 50%;
+            behavior: url(PIE.htc); /* remove if you don't care about IE8 */
+        }
 
+        .type1 {
+            width: 100px;
+            height: 100px;
+            /* background: yellow; */
+            border: 3px solid #52b1b1;
+        }
+    </style>
 </head>
 <body class="">
     <div class="page">
         <div class="page-single">
             <div class="container">
-                <div class="row align-items-center justify-content-center">
+                <div class="row align-items-center justify-content-center circleBase type3">
                     <div class="col-md-4">
                     </div>
                     <div class="col-md-4">
-                        <img src="~/assets/images/logo.png" style="margin-left:30% !important;" alt="tabler logo">
+                        <img src="~/assets/images/logo.png" style="margin-left:33% !important;box-shadow: 2px 2px 8px black;" class="circleBase type1" alt="tabler logo">
                     </div>
                     <div class="col-md-4">
                     </div>
                 </div>
                 <div class="row">
-
 
                     <div class="col col-login mx-auto">
                         <div class="text-center mb-6">
@@ -64,7 +75,7 @@
                         @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "card", role = "form" }))
                         {
                             @Html.AntiForgeryToken()
-                            <div class="card-body p-6">
+                            <div class="card-body p-6" style="box-shadow: 1px 1px 7px black;">
                                 <div class="card-title">Login to your account</div>
                                 <div class="form-group">
                                     <label class="form-label" for="username">User Name</label>
@@ -90,8 +101,8 @@
                             </div>
                         }
                         @*<div class="text-center text-muted">
-                            Don't have account yet? <a href="@Url.Action("Account", "Register")">Sign up</a>
-                        </div>*@
+                                Don't have account yet? <a href="@Url.Action("Account", "Register")">Sign up</a>
+                            </div>*@
                     </div>
                 </div>
             </div>

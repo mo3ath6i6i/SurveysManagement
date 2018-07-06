@@ -1,0 +1,17 @@
+﻿@model int?
+@{
+    IEnumerable<SelectListItem> selectList = null;
+
+    if (ViewData[Html.NameForModel().ToString()] != null)
+    {
+        selectList = (IEnumerable<SelectListItem>)ViewData[Html.NameForModel().ToString()];
+    }
+}
+<div class='form-group'>
+    @Html.LabelForModel()
+    @Html.DropDownListFor(Model => Model, selectList, new { @class = "form-control form-control-sm" })
+
+
+    @Html.ValidationMessageFor(Model => Model, "", new { @class = "error help-block" })
+</div>
+

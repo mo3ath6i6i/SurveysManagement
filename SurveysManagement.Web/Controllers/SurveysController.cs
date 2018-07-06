@@ -554,7 +554,8 @@ namespace SurveysManagement.Web.Controllers
                 return View(Survey);
             }
         }
-                
+
+        //Preview
         public int EditTemp(SurveyViewModel Survey)
         {
             if (Survey.hfPreviewId == null)
@@ -746,6 +747,8 @@ namespace SurveysManagement.Web.Controllers
             return entry;
         }
 
+
+        //Submit Answers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult AnswerSurvey(FormCollection form)

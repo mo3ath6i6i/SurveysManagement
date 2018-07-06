@@ -1,0 +1,10 @@
+﻿@model string
+
+@using System.Collections
+@using System.Web.Mvc;
+
+<div class="form-group">
+    @Html.LabelForModel()
+    @Html.TextAreaFor(Model => Model, new { @class = "form-control form-control-sm" })
+    @Html.ValidationMessageFor(Model => Model, "", new { @class = "error help-block" })
+</div>

@@ -1,0 +1,8 @@
+﻿@model bool?
+<div class="form-group">
+    <label>
+        @{var model = Model ?? false;}
+        @Html.CheckBoxFor(z => model)
+        @Html.DisplayNameForModel()
+    </label>
+</div>

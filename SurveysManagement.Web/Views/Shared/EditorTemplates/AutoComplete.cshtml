@@ -1,0 +1,27 @@
+﻿@model String
+
+<div class='form-group'>
+    @*@Html.LabelForModel()*@
+    <label class="textbox-over" for="textbox@{@Html.NameForModel();}">@(Html.DisplayNameForModel().ToString() == "" ? new MvcHtmlString("Search") : Html.DisplayNameForModel())</label>
+    <div class="textbox-wrap-right hasChilds autoComplete-container AutoCompleteSearch">
+        <input type="text" class="autoComplete" autocomplete="off" id="textbox@{@Html.NameForModel();}" data-url="@ViewBag.URL" value="@Model" data-onselect="@ViewBag.OnSelect" data-onsearch="@ViewBag.OnSearch" />
+        <div class="autoComplete-List listGroup">
+            <ul>
+                @*<li class="listItem"><span class="option" data-value="1">Item 1</span></li>
+                    <li class="listItem"><span class="option" data-value="2">Item 2</span></li>
+                    <li class="listItem"><span class="option" data-value="3">Item 3</span></li>*@
+                <li class="listItem"><span class="option" data-value="1"></span></li>
+                <li class="listItem"><span class="option" data-value="2"></span></li>
+                <li class="listItem"><span class="option" data-value="3"></span></li>
+                <li class="listItem"><span class="option" data-value="1"></span></li>
+                <li class="listItem"><span class="option" data-value="2"></span></li>
+                <li class="listItem"><span class="option" data-value="3"></span></li>
+            </ul>
+        </div>
+        <label class="textbox-over" for="textbox@{@Html.NameForModel();}">
+        </label>
+        @Html.TextBoxFor(Model => Model, new { @class = "invisible" })
+    </div>
+    @Html.ValidationMessageFor(Model => Model, "", new { @class = "error help-block" })
+</div>
+

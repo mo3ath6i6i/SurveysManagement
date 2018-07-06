@@ -12,6 +12,7 @@ using SurveysManagement.Web.Models;
 using SurveysManagement.DataAccess.Entities;
 using System.Collections.Generic;
 using System.Net;
+using System.Collections.ObjectModel;
 
 namespace SurveysManagement.Web.Controllers
 {
@@ -26,7 +27,7 @@ namespace SurveysManagement.Web.Controllers
         {
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
             SignInManager = signInManager;
@@ -38,9 +39,9 @@ namespace SurveysManagement.Web.Controllers
             {
                 return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
             }
-            private set 
-            { 
-                _signInManager = value; 
+            private set
+            {
+                _signInManager = value;
             }
         }
 
@@ -56,17 +57,15 @@ namespace SurveysManagement.Web.Controllers
             }
         }
 
-        //
         // GET: /Account/Login
         [AllowAnonymous]
-        
+
         public ActionResult Login(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
-        //
         // POST: /Account/Login
         [HttpPost]
         [AllowAnonymous]
@@ -78,17 +77,20 @@ namespace SurveysManagement.Web.Controllers
                 return View(model);
             }
 
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, change to shouldLockout: true
+            // This doesn't count login failures towards account lockout To enable password failures
+            // to trigger account lockout, change to shouldLockout: true
             var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
                     return RedirectToLocal(returnUrl);
+
                 case SignInStatus.LockedOut:
                     return View("Lockout");
+
                 case SignInStatus.RequiresVerification:
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
+
                 case SignInStatus.Failure:
                 default:
                     ModelState.AddModelError("", "Invalid login attempt.");
@@ -96,7 +98,6 @@ namespace SurveysManagement.Web.Controllers
             }
         }
 
-        //
         // GET: /Account/VerifyCode
         [AllowAnonymous]
         public async Task<ActionResult> VerifyCode(string provider, string returnUrl, bool rememberMe)
@@ -109,7 +110,6 @@ namespace SurveysManagement.Web.Controllers
             return View(new VerifyCodeViewModel { Provider = provider, ReturnUrl = returnUrl, RememberMe = rememberMe });
         }
 
-        //
         // POST: /Account/VerifyCode
         [HttpPost]
         [AllowAnonymous]
@@ -121,17 +121,19 @@ namespace SurveysManagement.Web.Controllers
                 return View(model);
             }
 
-            // The following code protects for brute force attacks against the two factor codes. 
-            // If a user enters incorrect codes for a specified amount of time then the user account 
-            // will be locked out for a specified amount of time. 
-            // You can configure the account lockout settings in IdentityConfig
-            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
+            // The following code protects for brute force attacks against the two factor codes. If a
+            // user enters incorrect codes for a specified amount of time then the user account will
+            // be locked out for a specified amount of time. You can configure the account lockout
+            // settings in IdentityConfig
+            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: model.RememberMe, rememberBrowser: model.RememberBrowser);
             switch (result)
             {
                 case SignInStatus.Success:
                     return RedirectToLocal(model.ReturnUrl);
+
                 case SignInStatus.LockedOut:
                     return View("Lockout");
+
                 case SignInStatus.Failure:
                 default:
                     ModelState.AddModelError("", "Invalid code.");
@@ -139,7 +141,6 @@ namespace SurveysManagement.Web.Controllers
             }
         }
 
-        //
         // GET: /Account/Register
         [AllowAnonymous]
         [Authorize(Roles = "Admin")]
@@ -148,7 +149,6 @@ namespace SurveysManagement.Web.Controllers
             return View();
         }
 
-        //
         // POST: /Account/Register
         [HttpPost]
         [AllowAnonymous]
@@ -159,10 +159,10 @@ namespace SurveysManagement.Web.Controllers
             if (ModelState.IsValid)
             {
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result =await UserManager.CreateAsync(user, model.Password);
-                
+                var result = await UserManager.CreateAsync(user, model.Password);
+
                 if (result.Succeeded)
-                {                    
+                {
                     //SurveyModel db = new SurveyModel();
                     AspNetUser newUser = db.AspNetUsers.FirstOrDefault(x => x.Email == user.Email);
                     if (model.Role == "1")
@@ -199,11 +199,14 @@ namespace SurveysManagement.Web.Controllers
                     db.SaveChanges();
                     //await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
 
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    // For more information on how to enable account confirmation and password reset
+                    // please visit http://go.microsoft.com/fwlink/?LinkID=320771 Send an email with
+                    // this link string code = await
+                    // UserManager.GenerateEmailConfirmationTokenAsync(user.Id); var callbackUrl =
+                    // Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code },
+                    // protocol: Request.Url.Scheme); await UserManager.SendEmailAsync(user.Id,
+                    // "Confirm your account", "Please confirm your account by clicking <a href=\"" +
+                    // callbackUrl + "\">here</a>");
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -214,7 +217,6 @@ namespace SurveysManagement.Web.Controllers
             return View(model);
         }
 
-        //
         // GET: /Account/Register
         [AllowAnonymous]
         [Authorize(Roles = "Admin")]
@@ -231,7 +233,7 @@ namespace SurveysManagement.Web.Controllers
             model.ShiftDescription = _User.ShiftDescription;
             model.Gender = _User.Gender;
             model.Area = _User.Area;
-            //model.BirthDate = _User.BirthDate;
+            model.BirthDate = _User.BirthDate;
             model.Education = _User.Education;
             //modelationDate = model.CreationDate;
             model.City = _User.City;
@@ -239,15 +241,33 @@ namespace SurveysManagement.Web.Controllers
             model.ShiftEnd = _User.ShiftEnd;
             model.ShiftStart = _User.ShiftStart;
             model.Street = _User.Street;
+
+            var userSurveys =
+               from us in db.UserSurveys
+               join s in db.Surveys on us.SurveyId equals s.Id
+               where us.UserId == id
+               select new { userSurveyID = us.Id, SurveyName = s.Name, SurveyId = s.Id };
+
+            Dictionary<string, int> pairs = new Dictionary<string, int>();
+
+            foreach (var item in userSurveys)
+            {
+                var Tasknum = db.SurveyEntries.Count(se => se.UserSurveyId == item.userSurveyID);
+                pairs.Add(item.SurveyName, Tasknum);
+            }
+
+            ViewBag.UserTasks = pairs;
+
+
+
             return View(model);
         }
-        
-        //
+
         // GET: /Account/Register
         [AllowAnonymous]
         [Authorize(Roles = "Admin")]
         public ActionResult EditUser(int id)
-        {            
+        {
             EditUserViewModel model = new EditUserViewModel();
             SurveyModel models = new SurveyModel();
             User _User = models.Users.FirstOrDefault(x => x.Id == id);
@@ -270,7 +290,6 @@ namespace SurveysManagement.Web.Controllers
             return View(model);
         }
 
-        //
         // POST: /Account/Register
         [HttpPost]
         [AllowAnonymous]
@@ -281,7 +300,7 @@ namespace SurveysManagement.Web.Controllers
             if (ModelState.IsValid)
             {
                 User user = db.Users.FirstOrDefault(x => x.Id == model.Id);
-                
+
                 user.Name = model.Name;
                 user.Major = model.Major;
                 user.Phone = model.Phone;
@@ -301,7 +320,7 @@ namespace SurveysManagement.Web.Controllers
                 AspNetUser newUser = db.AspNetUsers.FirstOrDefault(x => x.Id == user.ASPUserId);
                 if (model.RoleId == "1")
                 {
-                    UserManager.RemoveFromRoles(newUser.Id, new string[] {"User","Admin","Client"});
+                    UserManager.RemoveFromRoles(newUser.Id, new string[] { "User", "Admin", "Client" });
                     UserManager.AddToRole(newUser.Id, "User");
                 }
                 else if (model.RoleId == "2")
@@ -322,7 +341,6 @@ namespace SurveysManagement.Web.Controllers
             return View(model);
         }
 
-        //
         // GET: /Account/ConfirmEmail
         [AllowAnonymous]
         public async Task<ActionResult> ConfirmEmail(string userId, string code)
@@ -335,8 +353,6 @@ namespace SurveysManagement.Web.Controllers
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 
-
-        //
         // GET: /Account/ForgotPassword
         [AllowAnonymous]
         public ActionResult ForgotPassword()
@@ -344,7 +360,6 @@ namespace SurveysManagement.Web.Controllers
             return View();
         }
 
-        //
         // POST: /Account/ForgotPassword
         [HttpPost]
         [AllowAnonymous]
@@ -360,19 +375,20 @@ namespace SurveysManagement.Web.Controllers
                     return View("ForgotPasswordConfirmation");
                 }
 
-                // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=320771
-                // Send an email with this link
-                // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-                // var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);		
-                // await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
-                // return RedirectToAction("ForgotPasswordConfirmation", "Account");
+                // For more information on how to enable account confirmation and password reset
+                // please visit https://go.microsoft.com/fwlink/?LinkID=320771 Send an email with
+                // this link string code = await
+                // UserManager.GeneratePasswordResetTokenAsync(user.Id); var callbackUrl =
+                // Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code },
+                // protocol: Request.Url.Scheme); await UserManager.SendEmailAsync(user.Id, "Reset
+                // Password", "Please reset your password by clicking <a href=\"" + callbackUrl +
+                // "\">here</a>"); return RedirectToAction("ForgotPasswordConfirmation", "Account");
             }
 
             // If we got this far, something failed, redisplay form
             return View(model);
         }
 
-        //
         // GET: /Account/ForgotPasswordConfirmation
         [AllowAnonymous]
         public ActionResult ForgotPasswordConfirmation()
@@ -380,7 +396,6 @@ namespace SurveysManagement.Web.Controllers
             return View();
         }
 
-        //
         // GET: /Account/ResetPassword
         [AllowAnonymous]
         public ActionResult ResetPassword(string code)
@@ -388,16 +403,14 @@ namespace SurveysManagement.Web.Controllers
             return code == null ? View("Error") : View();
         }
 
-        //
         // GET: /Account/AdminResetPassword
         [Authorize(Roles = "Admin")]
         public ActionResult AdminResetPassword(int id)
         {
-            User user = db.Users.FirstOrDefault(x => x.Id == id);            
-            return user == null ? View("Error") : View(new ResetPasswordViewModel {Email = UserManager.FindById(user.ASPUserId).Email, Code = UserManager.GeneratePasswordResetToken(UserManager.FindById(user.ASPUserId).Id) });
+            User user = db.Users.FirstOrDefault(x => x.Id == id);
+            return user == null ? View("Error") : View(new ResetPasswordViewModel { Email = UserManager.FindById(user.ASPUserId).Email, Code = UserManager.GeneratePasswordResetToken(UserManager.FindById(user.ASPUserId).Id) });
         }
 
-        //
         // POST: /Account/ResetPassword
         [HttpPost]
         [AllowAnonymous]
@@ -424,7 +437,6 @@ namespace SurveysManagement.Web.Controllers
             return View();
         }
 
-        //
         // POST: /Account/ResetPassword
         [HttpPost]
         [AllowAnonymous]
@@ -450,7 +462,6 @@ namespace SurveysManagement.Web.Controllers
             return View();
         }
 
-        //
         // GET: /Account/ResetPasswordConfirmation
         [AllowAnonymous]
         public ActionResult ResetPasswordConfirmation()
@@ -458,7 +469,6 @@ namespace SurveysManagement.Web.Controllers
             return View();
         }
 
-        //
         // POST: /Account/ExternalLogin
         [HttpPost]
         [AllowAnonymous]
@@ -469,7 +479,6 @@ namespace SurveysManagement.Web.Controllers
             return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl }));
         }
 
-        //
         // GET: /Account/SendCode
         [AllowAnonymous]
         public async Task<ActionResult> SendCode(string returnUrl, bool rememberMe)
@@ -484,7 +493,6 @@ namespace SurveysManagement.Web.Controllers
             return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
         }
 
-        //
         // POST: /Account/SendCode
         [HttpPost]
         [AllowAnonymous]
@@ -504,7 +512,6 @@ namespace SurveysManagement.Web.Controllers
             return RedirectToAction("VerifyCode", new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
         }
 
-        //
         // GET: /Account/ExternalLoginCallback
         [AllowAnonymous]
         public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
@@ -521,10 +528,13 @@ namespace SurveysManagement.Web.Controllers
             {
                 case SignInStatus.Success:
                     return RedirectToLocal(returnUrl);
+
                 case SignInStatus.LockedOut:
                     return View("Lockout");
+
                 case SignInStatus.RequiresVerification:
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = false });
+
                 case SignInStatus.Failure:
                 default:
                     // If the user does not have an account, then prompt the user to create an account
@@ -534,7 +544,6 @@ namespace SurveysManagement.Web.Controllers
             }
         }
 
-        //
         // POST: /Account/ExternalLoginConfirmation
         [HttpPost]
         [AllowAnonymous]
@@ -572,7 +581,6 @@ namespace SurveysManagement.Web.Controllers
             return View(model);
         }
 
-        //
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -582,7 +590,6 @@ namespace SurveysManagement.Web.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        //
         // GET: /Account/ExternalLoginFailure
         [AllowAnonymous]
         public ActionResult ExternalLoginFailure()
@@ -610,7 +617,6 @@ namespace SurveysManagement.Web.Controllers
             base.Dispose(disposing);
         }
 
-        
         [Authorize(Roles = "Admin")]
         public ActionResult UsersList()
         {
@@ -623,11 +629,11 @@ namespace SurveysManagement.Web.Controllers
         {
             JsonResult result = new JsonResult();
             var role = db.AspNetUsers.Include("AspNetRoles").FirstOrDefault(x => x.UserName == username).AspNetRoles.FirstOrDefault();
-            result = this.Json(new {Text = role.Name});
+            result = this.Json(new { Text = role.Name });
             return result;
         }
-        
-        
+
+        // Fill Users List
         [Authorize(Roles = "Admin")]
         public ActionResult getUsers()
         {
@@ -646,14 +652,16 @@ namespace SurveysManagement.Web.Controllers
                 // Loading.
                 //SurveyModel db = new SurveyModel();
                 IQueryable<RegisterViewModel> data = from usr in db.Users
-                join reg in db.AspNetUsers.Include("AspNetRoles") on usr.ASPUserId equals reg.Id where(usr.isDeleted != true)
-                select new RegisterViewModel {
-                    Id = usr.Id,
-                    Name = usr.Name,
-                    Email = reg.Email,
-                    Phone = usr.Phone,
-                    Role = reg.AspNetRoles.Count > 0 ? reg.AspNetRoles.FirstOrDefault().Name : "-"
-                };
+                                                     join reg in db.AspNetUsers.Include("AspNetRoles") on usr.ASPUserId equals reg.Id
+                                                     where (usr.isDeleted != true)
+                                                     select new RegisterViewModel
+                                                     {
+                                                         Id = usr.Id,
+                                                         Name = usr.Name,
+                                                         Email = reg.Email,
+                                                         Phone = usr.Phone,
+                                                         Role = reg.AspNetRoles.Count > 0 ? reg.AspNetRoles.FirstOrDefault().Name : "-"
+                                                     };
 
                 // Total record count.
                 int totalRecords = data.Count();
@@ -702,7 +710,6 @@ namespace SurveysManagement.Web.Controllers
             return result;
         }
 
-        
         [Authorize(Roles = "Admin")]
         public ActionResult getUsersOnly()
         {
@@ -721,14 +728,16 @@ namespace SurveysManagement.Web.Controllers
                 // Loading.
                 //SurveyModel db = new SurveyModel();
                 IQueryable<RegisterViewModel> data = from usr in db.Users
-                join reg in db.AspNetUsers on usr.ASPUserId equals reg.Id where(usr.isDeleted != true && reg.AspNetRoles.Any(x => x.Name == "User"))
-                select new RegisterViewModel {
-                    Id = usr.Id,
-                    Name = usr.Name,
-                    Email = reg.Email,
-                    Phone = usr.Phone,
-                    BirthDate = usr.BirthDate
-                };
+                                                     join reg in db.AspNetUsers on usr.ASPUserId equals reg.Id
+                                                     where (usr.isDeleted != true && reg.AspNetRoles.Any(x => x.Name == "User"))
+                                                     select new RegisterViewModel
+                                                     {
+                                                         Id = usr.Id,
+                                                         Name = usr.Name,
+                                                         Email = reg.Email,
+                                                         Phone = usr.Phone,
+                                                         BirthDate = usr.BirthDate
+                                                     };
 
                 // Total record count.
                 int totalRecords = data.Count();
@@ -796,6 +805,7 @@ namespace SurveysManagement.Web.Controllers
         }
 
         #region Helpers
+
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";
 
@@ -839,7 +849,9 @@ namespace SurveysManagement.Web.Controllers
             }
 
             public string LoginProvider { get; set; }
+
             public string RedirectUri { get; set; }
+
             public string UserId { get; set; }
 
             public override void ExecuteResult(ControllerContext context)
@@ -852,6 +864,7 @@ namespace SurveysManagement.Web.Controllers
                 context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
             }
         }
-        #endregion
+
+        #endregion Helpers
     }
 }
