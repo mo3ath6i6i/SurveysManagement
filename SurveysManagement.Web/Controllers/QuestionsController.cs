@@ -27,6 +27,8 @@ namespace SurveysManagement.Web.Controllers
             return View();
         }
 
+
+
         [Authorize(Roles = "Admin")]
         public ActionResult getquestions()
         {

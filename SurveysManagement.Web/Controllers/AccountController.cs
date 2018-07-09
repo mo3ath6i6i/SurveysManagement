@@ -248,15 +248,24 @@ namespace SurveysManagement.Web.Controllers
                where us.UserId == id
                select new { userSurveyID = us.Id, SurveyName = s.Name, SurveyId = s.Id };
 
-            Dictionary<string, int> pairs = new Dictionary<string, int>();
+            //Dictionary<string, int> pairs = new Dictionary<string, int>();
+            List<List<string>> lstData = new List<List<string>>();
+
 
             foreach (var item in userSurveys)
             {
-                var Tasknum = db.SurveyEntries.Count(se => se.UserSurveyId == item.userSurveyID);
-                pairs.Add(item.SurveyName, Tasknum);
+                var taskCount = db.SurveyEntries.Count(se => se.UserSurveyId == item.userSurveyID);
+                //pairs.Add(item.SurveyName, taskCount);
+
+                List<string> lst = new List<string>();
+                lst.Add(item.SurveyName);
+                lst.Add(taskCount.ToString());
+                lst.Add(item.SurveyId.ToString());
+                lstData.Add(lst);
+
             }
 
-            ViewBag.UserTasks = pairs;
+            ViewBag.UserTasks = lstData;
 
 
 

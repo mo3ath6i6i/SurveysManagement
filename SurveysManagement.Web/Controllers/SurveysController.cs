@@ -339,7 +339,7 @@ namespace SurveysManagement.Web.Controllers
                     data = data.Where(p => p.Name.ToString().ToLower().Contains(search.ToLower())
                     || p.EndDate.ToString().ToLower().Contains(search.ToLower())
                     || p.StartDate.ToString().ToLower().Contains(search.ToLower())
-                    || p.Id.ToString().ToLower().Contains(search.ToLower())                    
+                    || p.Id.ToString().ToLower().Contains(search.ToLower())
                     || p.CreationDate.ToString().ToLower().Contains(search.ToLower())
                     );
                 }
@@ -367,10 +367,82 @@ namespace SurveysManagement.Web.Controllers
             return result;
         }
 
+
+
+        public JsonResult GetVisitCustomer(string Areas, string term = "")
+        {
+            var objCustomerlist = db.Questions
+                            .Where(c => c.isDeleted != true)
+                            .Where(c => c.Name.ToUpper()
+                            .Contains(term.ToUpper()))
+                            .Select(c => new { Name = c.Name, ID = c.Id }).Distinct()
+                           .ToList();
+            return Json(objCustomerlist, JsonRequestBehavior.AllowGet);
+
+
+            //var objCustomerlist = db.Questions.Where(c => c.isDeleted == false)
+            //    .Where(c => c.Name.ToUpper()
+            //    .Contains(term.ToUpper()))
+            //    .Select(c => new { Name = c.Name, ID = c.Id })
+            //    .Distinct().ToList();
+            //return Json(objCustomerlist, JsonRequestBehavior.AllowGet);
+
+
+
+        }
+
+        public JsonResult GetQuestionsList()
+        {
+            var objQuestionsList = db.Questions
+                            .Where(c => c.isDeleted != true)
+                            .Select(c => new { Name = c.Name, ID = c.Id }).Distinct()
+                           .ToList();
+            return Json(objQuestionsList, JsonRequestBehavior.AllowGet);
+
+        }
+
+        public JsonResult GetIndQuestionsList(int qID)
+        {
+            if (qID <= 0)
+                return null;
+
+            var objQuestionsList = db.Questions
+                            .Where(c => c.isDeleted != true)
+                            .Where(q => q.Id != qID)
+                            .Select(c => new { Name = c.Name, ID = c.Id }).Distinct()
+                           .ToList();
+            return Json(objQuestionsList, JsonRequestBehavior.AllowGet);
+
+        }
+
+
+
+
+        public JsonResult GetAnswersOfQuestion(int? qID=0)
+        {
+            if (qID <= 0)
+                return null;
+
+            var objAnswersOfQuestion = db.Answers
+                            .Where(c => c.isDeleted != true)
+                            .Where(a => a.QuestionId == qID)
+                            .Select(c => new { Name = c.Text, ID = c.Id }).Distinct()
+                           .ToList();
+            return Json(objAnswersOfQuestion, JsonRequestBehavior.AllowGet);
+
+        }
+
+
+
+
         // GET: Surveys/Edit/5
         [Authorize(Roles = "Admin")]
         public ActionResult Edit(int? id)
         {
+
+            ViewBag.QuestionsList = GetQuestionsList();
+
+
             if (id == null)
             {
                 var Agents = from usr in db.Users
@@ -380,7 +452,7 @@ namespace SurveysManagement.Web.Controllers
                 SurveyViewModel surveyViewModel = new SurveyViewModel();
                 surveyViewModel.Categories = db.Categories.Select(x => new HelperViewModel { Id = x.Id, Text = x.Name }).ToList();
                 surveyViewModel.Agents = Agents.Select(x => new HelperViewModel { Id = x.Id, Text = x.Name }).ToList();
-                
+
                 return View(surveyViewModel);
             }
             else
@@ -420,11 +492,11 @@ namespace SurveysManagement.Web.Controllers
                         surveyViewModel.SurveyQuestions = survey.SurveyQuestions.Where(x => x.Question.isDeleted != true).Select(x => new HelperViewModel { Id = x.QuestionId.Value }).ToList();
                         surveyViewModel.UserSurveys = survey.UserSurveys.Where(x => x.isDeleted != true).Select(x => new HelperViewModel { Id = x.UserId.Value }).ToList();
                         var Agents = from usr in db.Users
-                                        join reg in db.AspNetUsers on usr.ASPUserId equals reg.Id
-                                        where (usr.isDeleted != true && reg.AspNetRoles.FirstOrDefault().Name == Enums.Enums.RoleTypes.Client)
-                                        select (usr);
+                                     join reg in db.AspNetUsers on usr.ASPUserId equals reg.Id
+                                     where (usr.isDeleted != true && reg.AspNetRoles.FirstOrDefault().Name == Enums.Enums.RoleTypes.Client)
+                                     select (usr);
 
-                        surveyViewModel.Agents = Agents.Select(x => new HelperViewModel { Id = x.Id, Text = x.Name}).ToList();
+                        surveyViewModel.Agents = Agents.Select(x => new HelperViewModel { Id = x.Id, Text = x.Name }).ToList();
                         surveyViewModel.Categories = db.Categories.Select(x => new HelperViewModel { Id = x.Id, Text = x.Name }).ToList();
                         return View(surveyViewModel);
                     }
@@ -468,7 +540,7 @@ namespace SurveysManagement.Web.Controllers
             Survey.Agents = Agents.Select(x => new HelperViewModel { Id = x.Id, Text = x.Name }).ToList();
 
             if (Survey.hfIsPreview.ToLower() == "true")
-            {                
+            {
                 Survey.hfPreviewId = EditTemp(Survey);
                 return View(Survey);
             }
@@ -706,7 +778,7 @@ namespace SurveysManagement.Web.Controllers
                         var entry = getSurveyEntryForUser(id, userId);
 
                         //then, if an entry is found, then load the survey, questions and user answers
-                        if(entry != null)
+                        if (entry != null)
                         {
 
 
@@ -714,7 +786,7 @@ namespace SurveysManagement.Web.Controllers
                         }
                         //then bind
 
-                        
+
                     }
                 }
             }
@@ -876,7 +948,7 @@ namespace SurveysManagement.Web.Controllers
                         {
                             userAnswer.AnswerText = answer;
                         }
-                        
+
                         answers.Add(userAnswer);
 
                     }
@@ -885,6 +957,8 @@ namespace SurveysManagement.Web.Controllers
 
             return answers;
         }
+
+
 
 
         private Survey getSurveyById(int surveyId)
@@ -954,6 +1028,8 @@ namespace SurveysManagement.Web.Controllers
             foreach (var question in survey.TempSurveyQuestions)
             {
                 questions.Add(createTempInstance(question));
+                List<string> a = new List<string>();
+
             }
 
             return questions;
@@ -991,7 +1067,7 @@ namespace SurveysManagement.Web.Controllers
                     checkbox.QuestionType = QuestionTypes.Checkbox;
                     checkbox.QuestionText = question.Question.Name;
                     checkbox.QuestionUniqueID = question.Question.Id;
-                    checkbox.Answers = question.Question.Answers.Select(a => new MultipleChoiseQuestionAnswers { QuestionID = question.Id, Value = a.Id, Text = a.Text, isOther = a.isOther}).ToList();
+                    checkbox.Answers = question.Question.Answers.Select(a => new MultipleChoiseQuestionAnswers { QuestionID = question.Id, Value = a.Id, Text = a.Text, isOther = a.isOther }).ToList();
                     checkbox.RenderQuestion();
                     questionControl = checkbox;
                     break;

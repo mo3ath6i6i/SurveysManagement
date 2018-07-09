@@ -3,6 +3,17 @@
     ViewBag.Title = "View User Information";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<style>
+    table, th, td {
+        border: 1px solid black;
+        padding: 5px;
+    }
+
+    table {
+        border-spacing: 15px;
+    }
+</style>
+
 
 <form class="card" action="EditUser" method="post">
     @Html.AntiForgeryToken()
@@ -119,13 +130,25 @@
 
     <div class="card-body p-6">
 
+        <table style="width:50%">
+            <tr>
+                <th>Project Name </th>
+                <th>Task Done Count</th>
+            </tr>
 
-        <ul>
             @foreach (var customer in ViewBag.UserTasks)
             {
-            <li>Project: @customer.Key , Count : @customer.Value</li>
+                @*<li>Project Name : @customer.Key , Task Done Count : @customer.Value</li>
+                    string ProName = @customer.Key;*@
+                <tr>
+                    <td> @customer[0]</td>
+                    <td> @customer[1] </td>
+                </tr>
+
+
+
             }
-        </ul>
+        </table>
 
 
 
